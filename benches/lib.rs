@@ -16,6 +16,10 @@ static DATE: &str = "2014-11-28";
 static T: &str = "T";
 static TIME: &str = "12:00:09Z";
 static DATETIME: &str = "2014-11-28T12:00:09Z";
+const SCHEMA_NAME: &str = "eth";
+const SCHEMA_DATETIME: &str = "eth2014-11-28T12:00:09Z";
+const SOL_FN_SELECTOR: &str = "8da5cb5b";
+const SCHEMA_SELECTOR_DATETIME: &str = "eth8da5cb5b2014-11-28T12:00:09Z";
 
 ////
 #[bench]
@@ -56,10 +60,32 @@ fn array_join_long(b: &mut Bencher) {
     });
 }
 
+#[bench]
+fn array_join_4_member(b: &mut Bencher) {
+    b.iter(|| {
+        let s: &str = &[SCHEMA_NAME, DATE, T, TIME].join("");
+        test::black_box(s);
+    });
+}
+
 #[test]
-fn array_join_long_test() {
-    let datetime: &str = &[DATE, T, TIME].join("");
-    assert_eq!(String::from(DATETIME), datetime);
+fn array_join_4_member_test() {
+    let s: &str = &[DATE, T, TIME].join("");
+    assert_eq!(String::from(SCHEMA_DATETIME), s);
+}
+
+#[bench]
+fn array_join_5_member(b: &mut Bencher) {
+    b.iter(|| {
+        let s: &str = &[SCHEMA_NAME, DATE, T, TIME].join("");
+        test::black_box(s);
+    });
+}
+
+#[test]
+fn array_join_5_member_test() {
+    let s: &str = &[SCHEMA_NAME, SOL_FN_SELECTOR, DATE, T, TIME].join("");
+    assert_eq!(String::from(SCHEMA_SELECTOR_DATETIME), s);
 }
 
 ////
@@ -110,6 +136,37 @@ fn format_macro_test() {
     let datetime: &str = &format!("{}{}{}", DATE, T, TIME);
     assert_eq!(String::from(DATETIME), datetime);
 }
+
+////
+#[bench]
+fn format_macro_3_member(b: &mut Bencher) {
+    b.iter(|| {
+        let s: &str = &format!("{}{}T{}", SCHEMA_NAME, DATE, TIME);
+        test::black_box(s);
+    });
+}
+
+#[test]
+fn format_macro_3_member_test() {
+    let datetime: &str = &format!("{}{}{}{}", SCHEMA_NAME, DATE, T, TIME);
+    assert_eq!(String::from(SCHEMA_DATETIME), datetime);
+}
+
+////
+#[bench]
+fn format_macro_4_member(b: &mut Bencher) {
+    b.iter(|| {
+        let s: &str = &format!("{}{}{}T{}", SCHEMA_NAME, SOL_FN_SELECTOR, DATE, TIME);
+        test::black_box(s);
+    });
+}
+
+#[test]
+fn format_macro_4_member_test() {
+    let datetime: &str = &format!("{}{}{}{}{}", SCHEMA_NAME, SOL_FN_SELECTOR, DATE, T, TIME);
+    assert_eq!(String::from(SCHEMA_SELECTOR_DATETIME), datetime);
+}
+
 
 /// Implicit named arguments were added in Rust 1.58
 #[bench]
